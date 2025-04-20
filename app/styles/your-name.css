@@ -1,0 +1,567 @@
+/* Your Name specific styles with enhanced animations */
+.your-name-page {
+  --primary-color: #5c7aea;
+  --secondary-color: #a6b1e1;
+  --text-color: #424874;
+  --bg-color: #f9f7f7;
+  --accent-color: #ff6b6b;
+  
+  background: linear-gradient(135deg, var(--bg-color), #e4ebf5);
+  color: var(--text-color);
+}
+
+.your-name-header {
+  text-align: center;
+  position: relative;
+  padding: 3rem 0;
+  overflow: hidden;
+}
+
+.your-name-title {
+  font-size: 4rem;
+  margin-bottom: 1rem;
+  background: linear-gradient(90deg, var(--primary-color), var(--accent-color));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  position: relative;
+  z-index: 1;
+  text-shadow: 0 3px 5px rgba(0, 0, 0, 0.1);
+  animation: titlePulse 5s ease-in-out infinite, gentleFloat 6s ease-in-out infinite;
+  transform-origin: center;
+}
+
+.your-name-subtitle {
+  font-size: 1.5rem;
+  opacity: 0.8;
+  margin-bottom: 2rem;
+  animation: gentleFloat 7s ease-in-out infinite 1s;
+}
+
+.your-name-background {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+  opacity: 0.2;
+}
+
+.your-name-navigation .main-navigation {
+  background-color: white;
+  box-shadow: 0 2px 20px rgba(92, 122, 234, 0.1);
+}
+
+/* Character showcase styles */
+.your-name-characters {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 2rem;
+  margin-top: 4rem;
+}
+
+.your-name-characters .character-card {
+  width: 280px;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(92, 122, 234, 0.1);
+  overflow: hidden;
+  transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275),
+              box-shadow 0.5s ease;
+  opacity: 0;
+  animation: fadeIn 0.8s ease forwards;
+}
+
+.your-name-characters .character-card:hover {
+  transform: translateY(-15px) scale(1.02);
+  box-shadow: 0 15px 40px rgba(92, 122, 234, 0.2);
+}
+
+.your-name-characters .character-image-container {
+  height: 320px;
+  overflow: hidden;
+  position: relative;
+}
+
+.your-name-characters .character-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* This is the key property - makes image cover the container */
+  object-position: center; /* Centers the image within the container */
+  transition: transform 0.5s ease; /* For smooth hover effect */
+}
+
+.your-name-characters .character-card:hover .character-image {
+  transform: scale(1.05);
+}
+
+.your-name-characters .character-info {
+  padding: 1.5rem;
+}
+
+.your-name-characters .character-name {
+  font-size: 1.5rem;
+  margin-bottom: 0.5rem;
+  color: var(--primary-color);
+}
+
+.your-name-characters .character-description {
+  font-size: 0.9rem;
+  opacity: 0.8;
+  line-height: 1.6;
+}
+
+/* Animation info styles */
+.your-name-info {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(92, 122, 234, 0.1);
+  padding: 2rem;
+  margin-top: 4rem;
+  opacity: 0;
+  animation: fadeIn 0.8s ease forwards;
+  animation-delay: 0.6s;
+}
+
+.your-name-info .animation-header {
+  margin-bottom: 2rem;
+  border-bottom: 2px solid var(--secondary-color);
+  padding-bottom: 1rem;
+}
+
+.your-name-info .animation-title {
+  font-size: 2rem;
+  color: var(--primary-color);
+  margin-bottom: 0.5rem;
+}
+
+.your-name-info .animation-meta {
+  display: flex;
+  gap: 1rem;
+  font-size: 0.9rem;
+  opacity: 0.7;
+}
+
+.your-name-info .animation-section {
+  margin-bottom: 1.5rem;
+}
+
+.your-name-info .animation-section h3 {
+  font-size: 1.2rem;
+  margin-bottom: 0.5rem;
+  color: var(--primary-color);
+}
+
+.your-name-info .animation-section p {
+  line-height: 1.7;
+  opacity: 0.9;
+}
+
+/* Added section title styles */
+.your-name-page .section-title {
+  font-size: 2rem;
+  margin-bottom: 1.5rem;
+  color: var(--primary-color);
+  text-align: center;
+  opacity: 0;
+  animation: fadeIn 0.8s ease forwards;
+  animation-delay: 0.3s;
+}
+
+.character-section {
+  margin: 4rem 0;
+}
+
+.cosmic-elements .star {
+  position: absolute;
+  width: 4px;
+  height: 4px;
+  background-color: var(--primary-color);
+  border-radius: 50%;
+  box-shadow: 0 0 10px 2px var(--primary-color);
+  animation: twinkle 4s ease-in-out infinite;
+}
+
+/* Animation Keyframes */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slideIn {
+  from { transform: translateX(-50px); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+}
+
+@keyframes floatUp {
+  0% { transform: translateY(0); }
+  50% { transform: translateY(-15px); }
+  100% { transform: translateY(0); }
+}
+
+/* New gentler float animation for title and subtitle */
+@keyframes gentleFloat {
+  0% { transform: translateY(0) translateX(0); }
+  25% { transform: translateY(-8px) translateX(4px); }
+  50% { transform: translateY(0) translateX(0); }
+  75% { transform: translateY(5px) translateX(-4px); }
+  100% { transform: translateY(0) translateX(0); }
+}
+
+@keyframes titlePulse {
+  0% { text-shadow: 0 3px 5px rgba(0, 0, 0, 0.1); }
+  50% { text-shadow: 0 3px 15px rgba(92, 122, 234, 0.5); }
+  100% { text-shadow: 0 3px 5px rgba(0, 0, 0, 0.1); }
+}
+
+@keyframes twinkle {
+  0% { opacity: 0.3; box-shadow: 0 0 3px 1px var(--primary-color); }
+  50% { opacity: 1; box-shadow: 0 0 10px 2px var(--primary-color); }
+  100% { opacity: 0.3; box-shadow: 0 0 3px 1px var(--primary-color); }
+}
+
+@keyframes gradientShift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+/* State Classes */
+.your-name-page .fade-in {
+  opacity: 0;
+  animation: fadeIn 0.8s ease forwards;
+}
+
+.floating-element {
+  animation: floatUp 4s ease-in-out infinite;
+}
+
+
+/* Improved cosmic background */
+.your-name-page {
+  position: relative;
+  overflow: hidden; /* Keep the stars contained */
+}
+
+/* Cosmic background with multiple layers */
+.cosmic-background {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+  pointer-events: none;
+}
+
+/* Enhanced star animations */
+.star {
+  position: absolute;
+  border-radius: 50%;
+  background-color: white;
+  animation: twinkle var(--twinkle-duration) ease-in-out infinite;
+  z-index: 0;
+}
+
+.star-tiny {
+  width: 2px;
+  height: 2px;
+  box-shadow: 0 0 4px 1px rgba(255, 255, 255, 0.8);
+}
+
+.star-small {
+  width: 3px;
+  height: 3px;
+  box-shadow: 0 0 6px 2px rgba(255, 255, 255, 0.8);
+}
+
+.star-medium {
+  width: 4px;
+  height: 4px;
+  box-shadow: 0 0 8px 2px rgba(51, 217, 178, 0.9);
+}
+
+.star-large {
+  width: 5px;
+  height: 5px;
+  box-shadow: 0 0 10px 3px rgba(92, 122, 234, 0.9);
+}
+
+.comet {
+  position: absolute;
+  width: 4px;
+  height: 4px;
+  background-color: white;
+  border-radius: 50%;
+  box-shadow: 0 0 20px 4px rgba(255, 255, 255, 0.8), 
+              0 0 40px 8px rgba(92, 122, 234, 0.4);
+  z-index: 2;
+  pointer-events: none;
+  opacity: 0;
+  animation: cometMove 8s linear forwards;
+}
+
+.comet::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 0;
+  width: 100px;
+  height: 2px;
+  background: linear-gradient(90deg, rgba(255, 255, 255, 0.8), transparent);
+  transform: translateY(-50%);
+}
+
+/* Enhanced twinkle animation */
+@keyframes twinkle {
+  0% { opacity: 0.1; transform: scale(0.8); }
+  50% { opacity: 1; transform: scale(1.2); }
+  100% { opacity: 0.1; transform: scale(0.8); }
+}
+
+/* Improved title pulse */
+@keyframes titlePulse {
+  0% { text-shadow: 0 0 5px rgba(92, 122, 234, 0.3); }
+  50% { text-shadow: 0 0 20px rgba(92, 122, 234, 0.8), 0 0 30px rgba(255, 107, 107, 0.6); }
+  100% { text-shadow: 0 0 5px rgba(92, 122, 234, 0.3); }
+}
+
+/* Comet animation */
+@keyframes cometMove {
+  0% { 
+    left: -5%;
+    top: 20%;
+    opacity: 0;
+    transform: rotate(-45deg);
+  }
+  5% {
+    opacity: 1;
+  }
+  90% {
+    opacity: 1;
+  }
+  100% { 
+    left: 110%;
+    top: 60%;
+    opacity: 0;
+    transform: rotate(-45deg);
+  }
+}
+
+.comet-1 {
+  animation-duration: 6s;
+  top: 15%;
+}
+
+.comet-2 {
+  animation-duration: 8s;
+  animation-delay: 3s;
+  top: 35%;
+}
+
+.comet-3 {
+  animation-duration: 7s;
+  animation-delay: 6s;
+  top: 25%;
+}
+
+/* Cosmic dust particles */
+.cosmic-dust {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  background-color: rgba(255, 255, 255, 0.5);
+  border-radius: 50%;
+  box-shadow: 0 0 2px 1px rgba(255, 255, 255, 0.3);
+  animation: dust 20s linear infinite;
+}
+
+@keyframes dust {
+  0% {
+    transform: translateY(0) rotate(0deg);
+    opacity: 0;
+  }
+  10% {
+    opacity: 0.8;
+  }
+  90% {
+    opacity: 0.8;
+  }
+  100% {
+    transform: translateY(-1000px) rotate(360deg);
+    opacity: 0;
+  }
+}
+
+/* Rainbow Fixed Comets */
+.fixed-comet {
+  position: fixed;
+  width: 6px;
+  height: 6px;
+  background-color: white;
+  border-radius: 50%;
+  box-shadow: 
+    0 0 20px 4px rgba(255, 255, 255, 0.9),
+    0 0 40px 8px rgba(92, 122, 234, 0.6);
+  z-index: 9999; /* Ensure it's on top of everything */
+  overflow: visible;
+  pointer-events: none;
+  animation-name: colorShift; /* Add this to existing animations */
+  animation-duration: 10s;
+  animation-iteration-count: infinite;
+  animation-timing-function: linear;
+}
+
+/* Rainbow color shift animation */
+@keyframes colorShift {
+  0% { 
+    background-color: #ff0000; /* Red */
+    box-shadow: 
+      0 0 20px 4px rgba(255, 0, 0, 0.9),
+      0 0 40px 8px rgba(255, 0, 0, 0.6);
+  }
+  16% { 
+    background-color: #ff9900; /* Orange */
+    box-shadow: 
+      0 0 20px 4px rgba(255, 153, 0, 0.9),
+      0 0 40px 8px rgba(255, 153, 0, 0.6);
+  }
+  33% { 
+    background-color: #ffff00; /* Yellow */
+    box-shadow: 
+      0 0 20px 4px rgba(255, 255, 0, 0.9),
+      0 0 40px 8px rgba(255, 255, 0, 0.6);
+  }
+  50% { 
+    background-color: #33cc33; /* Green */
+    box-shadow: 
+      0 0 20px 4px rgba(51, 204, 51, 0.9),
+      0 0 40px 8px rgba(51, 204, 51, 0.6);
+  }
+  66% { 
+    background-color: #3399ff; /* Blue */
+    box-shadow: 
+      0 0 20px 4px rgba(51, 153, 255, 0.9),
+      0 0 40px 8px rgba(51, 153, 255, 0.6);
+  }
+  83% { 
+    background-color: #9933ff; /* Purple */
+    box-shadow: 
+      0 0 20px 4px rgba(153, 51, 255, 0.9),
+      0 0 40px 8px rgba(153, 51, 255, 0.6);
+  }
+  100% { 
+    background-color: #ff0066; /* Pink (back to close to red) */
+    box-shadow: 
+      0 0 20px 4px rgba(255, 0, 102, 0.9),
+      0 0 40px 8px rgba(255, 0, 102, 0.6);
+  }
+}
+
+.fixed-comet::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  right: 0;
+  width: 150px;
+  height: 3px;
+  background: linear-gradient(to left, currentColor, transparent);
+  transform: translateY(-50%);
+  opacity: 0.9;
+}
+
+/* First fixed comet - moving from top-left to bottom-right */
+.fixed-comet-1 {
+  top: -50px;
+  left: -50px;
+  animation: fixedCometMove1 10s linear infinite, colorShift 5s linear infinite;
+}
+
+/* Second fixed comet - moving from right to left */
+.fixed-comet-2 {
+  top: 30%;
+  right: -50px;
+  animation: fixedCometMove2 15s linear infinite, colorShift 7s linear infinite;
+  animation-delay: 5s, 1s;
+}
+
+/* Third fixed comet - moving bottom to top */
+.fixed-comet-3 {
+  bottom: -50px;
+  left: 40%;
+  animation: fixedCometMove3 12s linear infinite, colorShift 6s linear infinite;
+  animation-delay: 8s, 2s;
+}
+
+@keyframes fixedCometMove1 {
+  0% {
+    top: -50px;
+    left: -50px;
+    opacity: 0;
+  }
+  10% {
+    opacity: 1;
+  }
+  90% {
+    opacity: 1;
+  }
+  100% {
+    top: 100vh;
+    left: 100vw;
+    opacity: 0;
+  }
+}
+
+@keyframes fixedCometMove2 {
+  0% {
+    right: -50px;
+    opacity: 0;
+    transform: rotate(180deg);
+  }
+  10% {
+    opacity: 1;
+  }
+  90% {
+    opacity: 1;
+  }
+  100% {
+    right: 110%;
+    opacity: 0;
+    transform: rotate(180deg);
+  }
+}
+
+@keyframes fixedCometMove3 {
+  0% {
+    bottom: -50px;
+    left: 40%;
+    opacity: 0;
+    transform: rotate(-45deg);
+  }
+  10% {
+    opacity: 1;
+  }
+  90% {
+    opacity: 1;
+  }
+  100% {
+    bottom: 120%;
+    left: 20%;
+    opacity: 0;
+    transform: rotate(-45deg);
+  }
+}
+
+/* Flowing Ribbon Animation - add this to your-name.css */
+.flowing-ribbon {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 100;
+  filter: drop-shadow(0 0 8px rgba(255, 107, 107, 0.6));
+}

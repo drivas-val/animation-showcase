@@ -1,0 +1,537 @@
+/* Prince Achmed specific styles */
+.prince-achmed-page {
+  --primary-color: #b22b27;
+  --secondary-color: #ffae42;
+  --text-color: #ffefd5;
+  --bg-color: #1c1018;
+  --accent-color: #d4af37;
+
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  position: relative;
+  overflow: hidden;
+}
+
+.prince-achmed-header {
+  text-align: center;
+  position: relative;
+  padding: 3rem 0;
+  overflow: hidden;
+}
+
+.prince-achmed-title {
+  font-size: 4rem;
+  margin-bottom: 1rem;
+  color: var(--secondary-color);
+  position: relative;
+  z-index: 1;
+  text-shadow: 0 3px 5px rgba(0, 0, 0, 0.5);
+  font-family: "Montserrat", serif;
+  animation: silhouetteFlicker 5s ease-in-out infinite;
+}
+
+.prince-achmed-subtitle {
+  font-size: 1.5rem;
+  opacity: 0.9;
+  margin-bottom: 2rem;
+  color: var(--accent-color);
+  animation: subtitleAppear 2s ease-out forwards;
+}
+
+.prince-achmed-navigation .main-navigation {
+  background-color: var(--bg-color);
+  box-shadow: 0 2px 20px rgba(178, 43, 39, 0.3);
+  border-bottom: 1px solid var(--secondary-color);
+}
+
+.prince-achmed-navigation .nav-tab {
+  color: var(--text-color);
+}
+
+.prince-achmed-navigation .home-link {
+  color: var(--text-color);
+}
+
+/* Ornamental patterns */
+.ornamental-pattern {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  z-index: 0;
+  opacity: 0.15;
+  background-image: url("/images/ornamental-pattern.svg");
+  background-size: 500px;
+  pointer-events: none;
+}
+
+/* Character showcase styles */
+.prince-achmed-characters {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 3rem;
+  margin-top: 4rem;
+  position: relative;
+}
+
+.prince-achmed-characters .character-card {
+  width: 280px;
+  /* Remove the fixed height to allow content to determine height */
+  background: var(--bg-color);
+  border: 2px solid var(--secondary-color);
+  border-radius: 0; /* Sharp edges inspired by cut-out silhouettes */
+  overflow: visible; /* Change from hidden to visible */
+  transition: transform 0.5s ease, box-shadow 0.5s ease;
+  position: relative;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+  opacity: 0;
+  animation: silhouetteReveal 1s ease forwards;
+  display: flex;
+  flex-direction: column;
+}
+
+.prince-achmed-characters .character-card:nth-child(1) {
+  animation-delay: 0.2s;
+}
+
+.prince-achmed-characters .character-card:nth-child(2) {
+  animation-delay: 0.4s;
+}
+
+.prince-achmed-characters .character-card:nth-child(3) {
+  animation-delay: 0.6s;
+}
+
+.prince-achmed-characters .character-card:hover {
+  transform: translateY(-10px) scale(1.02);
+  box-shadow: 0 15px 40px rgba(178, 43, 39, 0.3);
+}
+
+.prince-achmed-characters .character-image-container {
+  height: 320px;
+  overflow: hidden;
+  position: relative;
+  background-color: var(--bg-color);
+}
+
+.prince-achmed-characters .character-image {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  filter: contrast(180%) brightness(90%);
+  transform: scale(0.9);
+  transition: transform 0.5s ease;
+}
+
+.prince-achmed-characters .character-card:hover .character-image {
+  transform: scale(1);
+}
+
+/* Silhouette effect for character images */
+.silhouette-effect {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(
+    circle at center,
+    transparent 60%,
+    var(--bg-color) 100%
+  );
+  mix-blend-mode: multiply;
+  pointer-events: none;
+}
+
+.prince-achmed-characters .character-info {
+  padding: 1.5rem;
+  position: relative;
+  z-index: 1;
+  border-top: 1px solid var(--secondary-color);
+  background-color: rgba(28, 16, 24, 0.8);
+}
+
+.prince-achmed-characters .character-name {
+  font-size: 1.5rem;
+  margin-bottom: 0.5rem;
+  color: var(--secondary-color);
+  font-family: "Montserrat", serif;
+}
+
+.prince-achmed-characters .character-description {
+  font-size: 0.9rem;
+  line-height: 1.6;
+  color: var(--text-color);
+}
+
+/* Animation info styles */
+.prince-achmed-info {
+  background: var(--bg-color);
+  border: 2px solid var(--secondary-color);
+  padding: 2rem;
+  margin-top: 4rem;
+  opacity: 0;
+  animation: silhouetteReveal 0.8s ease forwards;
+  animation-delay: 0.8s;
+  position: relative;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+}
+
+.prince-achmed-info::before {
+  content: "";
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  right: 10px;
+  bottom: 10px;
+  border: 1px solid var(--accent-color);
+  pointer-events: none;
+}
+
+.prince-achmed-info .animation-header {
+  margin-bottom: 2rem;
+  border-bottom: 2px solid var(--secondary-color);
+  padding-bottom: 1rem;
+}
+
+.prince-achmed-info .animation-title {
+  font-size: 2rem;
+  color: var(--secondary-color);
+  margin-bottom: 0.5rem;
+}
+
+.prince-achmed-info .animation-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  font-size: 0.9rem;
+  opacity: 0.8;
+}
+
+.prince-achmed-info .animation-section {
+  margin-bottom: 1.5rem;
+}
+
+.prince-achmed-info .animation-section h3 {
+  font-size: 1.2rem;
+  margin-bottom: 0.5rem;
+  color: var(--secondary-color);
+}
+
+.prince-achmed-info .animation-section p {
+  line-height: 1.7;
+}
+
+.prince-achmed-page .section-title {
+  font-size: 2rem;
+  margin-bottom: 1.5rem;
+  color: var(--secondary-color);
+  text-align: center;
+  position: relative;
+  opacity: 0;
+  animation: silhouetteReveal 0.8s ease forwards;
+  animation-delay: 0.3s;
+}
+
+.section-title::after {
+  content: "";
+  position: absolute;
+  bottom: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100px;
+  height: 2px;
+  background-color: var(--secondary-color);
+}
+
+.character-section {
+  margin: 4rem 0;
+  position: relative;
+}
+
+/* Paper cutout shadow effect */
+.paper-cutout-shadow {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 50%;
+  height: 100%;
+  background: radial-gradient(
+    ellipse at right,
+    rgba(0, 0, 0, 0.3) 0%,
+    transparent 70%
+  );
+  pointer-events: none;
+  z-index: -1;
+}
+
+/* Shadow theater background */
+.shadow-theater {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -1;
+  opacity: 0.1;
+  background-image: radial-gradient(
+      circle at 30% 20%,
+      rgba(255, 174, 66, 0.2) 0%,
+      transparent 40%
+    ),
+    radial-gradient(
+      circle at 70% 60%,
+      rgba(255, 174, 66, 0.2) 0%,
+      transparent 40%
+    );
+  pointer-events: none;
+}
+
+/* Decorative cutout elements */
+.decorative-cutout {
+  position: absolute;
+  z-index: 0;
+  opacity: 0.3;
+  pointer-events: none;
+}
+
+.cutout-1 {
+  width: 150px;
+  height: 150px;
+  top: 10%;
+  left: 5%;
+  background-image: url("/images/prince-achmed-cutout-1.svg");
+  background-size: contain;
+  background-repeat: no-repeat;
+  animation: floatSilhouette 10s ease-in-out infinite;
+}
+
+.cutout-2 {
+  width: 180px;
+  height: 180px;
+  bottom: 10%;
+  right: 5%;
+  background-image: url("/images/prince-achmed-cutout-2.svg");
+  background-size: contain;
+  background-repeat: no-repeat;
+  animation: floatSilhouette 12s ease-in-out infinite reverse;
+}
+
+.cutout-3 {
+  width: 120px;
+  height: 120px;
+  top: 40%;
+  right: 10%;
+  background-image: url("/images/prince-achmed-cutout-3.svg");
+  background-size: contain;
+  background-repeat: no-repeat;
+  animation: floatSilhouette 15s ease-in-out infinite 2s;
+}
+
+/* Animation Keyframes */
+@keyframes silhouetteReveal {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes silhouetteFlicker {
+  0% {
+    text-shadow: 0 0 5px rgba(255, 174, 66, 0.3);
+  }
+  5% {
+    text-shadow: 0 0 15px rgba(255, 174, 66, 0.7);
+  }
+  10% {
+    text-shadow: 0 0 5px rgba(255, 174, 66, 0.3);
+  }
+  15% {
+    text-shadow: 0 0 10px rgba(255, 174, 66, 0.5);
+  }
+  20% {
+    text-shadow: 0 0 5px rgba(255, 174, 66, 0.3);
+  }
+  100% {
+    text-shadow: 0 0 5px rgba(255, 174, 66, 0.3);
+  }
+}
+
+@keyframes floatSilhouette {
+  0% {
+    transform: translateY(0) rotate(0deg);
+  }
+  25% {
+    transform: translateY(-10px) rotate(2deg);
+  }
+  50% {
+    transform: translateY(0) rotate(0deg);
+  }
+  75% {
+    transform: translateY(10px) rotate(-2deg);
+  }
+  100% {
+    transform: translateY(0) rotate(0deg);
+  }
+}
+
+@keyframes subtitleAppear {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 0.9;
+    transform: translateY(0);
+  }
+}
+
+@keyframes flickerGlow {
+  0% {
+    box-shadow: 0 0 5px rgba(255, 174, 66, 0.3);
+  }
+  25% {
+    box-shadow: 0 0 15px rgba(255, 174, 66, 0.7);
+  }
+  50% {
+    box-shadow: 0 0 5px rgba(255, 174, 66, 0.3);
+  }
+  75% {
+    box-shadow: 0 0 10px rgba(255, 174, 66, 0.5);
+  }
+  100% {
+    box-shadow: 0 0 5px rgba(255, 174, 66, 0.3);
+  }
+}
+
+/* Interactive silhouette puppets */
+.interactive-puppet-container {
+  position: relative;
+  height: 300px;
+  margin: 3rem auto;
+  max-width: 800px;
+  border: 2px solid var(--secondary-color);
+  overflow: hidden;
+  background-color: #110a0c;
+}
+
+.puppet-stage {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.puppet {
+  position: absolute;
+  transition: transform 0.3s ease;
+  transform-origin: top center;
+  filter: drop-shadow(0 0 10px rgba(255, 174, 66, 0.3));
+}
+
+.prince-puppet {
+  left: 35%;
+  height: 200px;
+  animation: puppetSway 10s ease-in-out infinite;
+}
+
+.witch-puppet {
+  right: 35%;
+  height: 180px;
+  animation: puppetSway 8s ease-in-out infinite reverse;
+}
+
+.banu-puppet {
+  left: 20%;
+  height: 200px;
+  animation: puppetSway 10s ease-in-out infinite;
+}
+
+.wizard-puppet {
+  right: 15%;
+  height: 180px;
+  animation: puppetSway 8s ease-in-out infinite reverse;
+}
+
+.stage-light {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 300px;
+  height: 300px;
+  background: radial-gradient(
+    ellipse at center,
+    rgba(255, 174, 66, 0.3) 0%,
+    transparent 70%
+  );
+  pointer-events: none;
+  animation: lightFlicker 5s ease-in-out infinite;
+}
+
+@keyframes puppetSway {
+  0% {
+    transform: rotate(0deg);
+  }
+  25% {
+    transform: rotate(3deg);
+  }
+  50% {
+    transform: rotate(0deg);
+  }
+  75% {
+    transform: rotate(-3deg);
+  }
+  100% {
+    transform: rotate(0deg);
+  }
+}
+
+@keyframes lightFlicker {
+  0% {
+    opacity: 0.3;
+  }
+  25% {
+    opacity: 0.4;
+  }
+  50% {
+    opacity: 0.3;
+  }
+  75% {
+    opacity: 0.5;
+  }
+  100% {
+    opacity: 0.3;
+  }
+}
+
+/* Media Queries */
+@media (max-width: 768px) {
+  .prince-achmed-title {
+    font-size: 2.5rem;
+  }
+
+  .prince-achmed-characters {
+    gap: 2rem;
+  }
+
+  .interactive-puppet-container {
+    height: 250px;
+  }
+
+  .prince-puppet {
+    height: 150px;
+  }
+
+  .witch-puppet {
+    height: 130px;
+  }
+}

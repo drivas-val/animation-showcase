@@ -1,0 +1,18 @@
+<svg width="40" height="40" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg">
+  <!-- Strange geometric alien -->
+  <polygon points="20,5 30,15 25,30 15,30 10,15" fill="#ff7979" fill-opacity="0.8" />
+  
+  <!-- Central eye -->
+  <circle cx="20" cy="20" r="5" fill="#051f17" />
+  <circle cx="20" cy="20" r="2" fill="#f6cd61" />
+  
+  <!-- Limbs -->
+  <line x1="10" y1="15" x2="5" y2="10" stroke="#ff7979" stroke-width="1" />
+  <line x1="30" y1="15" x2="35" y2="10" stroke="#ff7979" stroke-width="1" />
+  <line x1="15" y1="30" x2="10" y2="35" stroke="#ff7979" stroke-width="1" />
+  <line x1="25" y1="30" x2="30" y2="35" stroke="#ff7979" stroke-width="1" />
+  
+  <!-- Strange pulsating rings -->
+  <circle cx="20" cy="20" r="8" fill="none" stroke="#4bcfb5" stroke-width="0.5" stroke-opacity="0.6" />
+  <circle cx="20" cy="20" r="12" fill="none" stroke="#4bcfb5" stroke-width="0.5" stroke-opacity="0.4" />
+</svg>

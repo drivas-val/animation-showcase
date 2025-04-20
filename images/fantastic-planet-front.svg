@@ -1,0 +1,46 @@
+<svg width="800" height="300" viewBox="0 0 800 300" xmlns="http://www.w3.org/2000/svg">
+  <!-- Transparent background to allow bg to show through -->
+  <rect width="800" height="300" fill="none" />
+  
+  <!-- Foreground strange alien plant forms -->
+  <g fill="#218c74" fill-opacity="0.8">
+    <!-- Tall spike-like plant left -->
+    <path d="M50,280 
+      L40,180 L60,180 L50,280 
+      M40,180 L20,150 
+      M60,180 L80,150 
+      M50,180 L50,140 
+      M40,160 L20,140 
+      M60,160 L80,140" />
+      
+    <!-- Bulbous formation center-left -->
+    <path d="M200,280 
+      C200,250 180,230 180,200 
+      C180,170 220,170 220,200 
+      C220,230 200,250 200,280 Z" />
+      
+    <!-- Strange tendrils right -->
+    <path d="M550,280 
+      C550,260 540,240 560,230 
+      C580,220 570,200 550,210 
+      C530,220 510,200 530,190 
+      C550,180 540,160 520,170" 
+      fill="none" stroke="#218c74" stroke-width="5" stroke-opacity="0.8" />
+      
+    <!-- Bizarre rounded form far-right -->
+    <path d="M700,280 
+      C700,240 730,230 730,210 
+      C730,190 670,190 670,210 
+      C670,230 700,240 700,280 Z" />
+  </g>
+  
+  <!-- Foreground terrain -->
+  <path d="M0,260 
+    C50,240 100,250 150,245 
+    C200,240 250,260 300,250 
+    C350,240 400,220 450,240 
+    C500,260 550,250 600,255 
+    C650,260 700,245 750,255 
+    L800,300 L0,300 Z" 
+    fill="#0f5940" />
+</svg>

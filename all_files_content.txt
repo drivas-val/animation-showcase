@@ -1,0 +1,1925 @@
+# File Contents Collection
+# Generated on 2025-04-17 14:22:38.292155
+# Current directory: /Users/leinad/interpreting-film
+
+
+
+---------------------------------------
+File: vite.config.ts
+---------------------------------------
+
+import { vitePlugin as remix } from "@remix-run/dev";
+import { defineConfig } from "vite";
+import tsconfigPaths from "vite-tsconfig-paths";
+
+declare module "@remix-run/node" {
+  interface Future {
+    v3_singleFetch: true;
+  }
+}
+
+export default defineConfig({
+  plugins: [
+    remix({
+      future: {
+        v3_fetcherPersist: true,
+        v3_relativeSplatPath: true,
+        v3_throwAbortReason: true,
+        v3_singleFetch: true,
+        v3_lazyRouteDiscovery: true,
+      },
+    }),
+    tsconfigPaths(),
+  ],
+});
+
+
+---------------------------------------
+File: app/entry.client.tsx
+---------------------------------------
+
+/**
+ * By default, Remix will handle hydrating your app on the client for you.
+ * You are free to delete this file if you'd like to, but if you ever want it revealed again, you can run `npx remix reveal` ✨
+ * For more information, see https://remix.run/file-conventions/entry.client
+ */
+
+import { RemixBrowser } from "@remix-run/react";
+import { startTransition, StrictMode } from "react";
+import { hydrateRoot } from "react-dom/client";
+
+startTransition(() => {
+  hydrateRoot(
+    document,
+    <StrictMode>
+      <RemixBrowser />
+    </StrictMode>
+  );
+});
+
+
+---------------------------------------
+File: app/entry.server.tsx
+---------------------------------------
+
+/**
+ * By default, Remix will handle generating the HTTP Response for you.
+ * You are free to delete this file if you'd like to, but if you ever want it revealed again, you can run `npx remix reveal` ✨
+ * For more information, see https://remix.run/file-conventions/entry.server
+ */
+
+import { PassThrough } from "node:stream";
+
+import type { AppLoadContext, EntryContext } from "@remix-run/node";
+import { createReadableStreamFromReadable } from "@remix-run/node";
+import { RemixServer } from "@remix-run/react";
+import { isbot } from "isbot";
+import { renderToPipeableStream } from "react-dom/server";
+
+const ABORT_DELAY = 5_000;
+
+export default function handleRequest(
+  request: Request,
+  responseStatusCode: number,
+  responseHeaders: Headers,
+  remixContext: EntryContext,
+  // This is ignored so we can keep it in the template for visibility.  Feel
+  // free to delete this parameter in your app if you're not using it!
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  loadContext: AppLoadContext
+) {
+  return isbot(request.headers.get("user-agent") || "")
+    ? handleBotRequest(
+        request,
+        responseStatusCode,
+        responseHeaders,
+        remixContext
+      )
+    : handleBrowserRequest(
+        request,
+        responseStatusCode,
+        responseHeaders,
+        remixContext
+      );
+}
+
+function handleBotRequest(
+  request: Request,
+  responseStatusCode: number,
+  responseHeaders: Headers,
+  remixContext: EntryContext
+) {
+  return new Promise((resolve, reject) => {
+    let shellRendered = false;
+    const { pipe, abort } = renderToPipeableStream(
+      <RemixServer
+        context={remixContext}
+        url={request.url}
+        abortDelay={ABORT_DELAY}
+      />,
+      {
+        onAllReady() {
+          shellRendered = true;
+          const body = new PassThrough();
+          const stream = createReadableStreamFromReadable(body);
+
+          responseHeaders.set("Content-Type", "text/html");
+
+          resolve(
+            new Response(stream, {
+              headers: responseHeaders,
+              status: responseStatusCode,
+            })
+          );
+
+          pipe(body);
+        },
+        onShellError(error: unknown) {
+          reject(error);
+        },
+        onError(error: unknown) {
+          responseStatusCode = 500;
+          // Log streaming rendering errors from inside the shell.  Don't log
+          // errors encountered during initial shell rendering since they'll
+          // reject and get logged in handleDocumentRequest.
+          if (shellRendered) {
+            console.error(error);
+          }
+        },
+      }
+    );
+
+    setTimeout(abort, ABORT_DELAY);
+  });
+}
+
+function handleBrowserRequest(
+  request: Request,
+  responseStatusCode: number,
+  responseHeaders: Headers,
+  remixContext: EntryContext
+) {
+  return new Promise((resolve, reject) => {
+    let shellRendered = false;
+    const { pipe, abort } = renderToPipeableStream(
+      <RemixServer
+        context={remixContext}
+        url={request.url}
+        abortDelay={ABORT_DELAY}
+      />,
+      {
+        onShellReady() {
+          shellRendered = true;
+          const body = new PassThrough();
+          const stream = createReadableStreamFromReadable(body);
+
+          responseHeaders.set("Content-Type", "text/html");
+
+          resolve(
+            new Response(stream, {
+              headers: responseHeaders,
+              status: responseStatusCode,
+            })
+          );
+
+          pipe(body);
+        },
+        onShellError(error: unknown) {
+          reject(error);
+        },
+        onError(error: unknown) {
+          responseStatusCode = 500;
+          // Log streaming rendering errors from inside the shell.  Don't log
+          // errors encountered during initial shell rendering since they'll
+          // reject and get logged in handleDocumentRequest.
+          if (shellRendered) {
+            console.error(error);
+          }
+        },
+      }
+    );
+
+    setTimeout(abort, ABORT_DELAY);
+  });
+}
+
+
+---------------------------------------
+File: app/root.tsx
+---------------------------------------
+
+import {
+  Links,
+  LiveReload,
+  Meta,
+  Outlet,
+  Scripts,
+  ScrollRestoration,
+} from "@remix-run/react";
+import type { LinksFunction } from "@remix-run/node";
+
+import globalStylesUrl from "~/styles/global.css";
+
+export const links: LinksFunction = () => {
+  return [
+    { rel: "stylesheet", href: globalStylesUrl },
+    { rel: "preconnect", href: "https://fonts.googleapis.com" },
+    {
+      rel: "preconnect",
+      href: "https://fonts.gstatic.com",
+      crossOrigin: "anonymous",
+    },
+    {
+      rel: "stylesheet",
+      href: "https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&family=Roboto:wght@400;700&display=swap",
+    },
+  ];
+};
+
+export default function App() {
+  return (
+    <html lang="en">
+      <head>
+        <meta charSet="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <Meta />
+        <Links />
+      </head>
+      <body>
+        <Outlet />
+        <ScrollRestoration />
+        <Scripts />
+        <LiveReload />
+      </body>
+    </html>
+  );
+}
+
+
+---------------------------------------
+File: app/tailwind.css
+---------------------------------------
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html,
+body {
+  @apply bg-white dark:bg-gray-950;
+
+  @media (prefers-color-scheme: dark) {
+    color-scheme: dark;
+  }
+}
+
+
+---------------------------------------
+File: app/utils/animations.ts
+---------------------------------------
+
+// Enhanced animation utilities with more dramatic effects
+
+// Adds and removes animation classes with proper timing
+export const animateElement = (
+  element: HTMLElement,
+  animationClass: string,
+  duration: number = 1000
+): Promise<void> => {
+  return new Promise((resolve) => {
+    element.classList.add(animationClass);
+
+    setTimeout(() => {
+      element.classList.remove(animationClass);
+      resolve();
+    }, duration);
+  });
+};
+
+// Staggers animations for multiple elements
+export const staggerAnimations = async (
+  elements: HTMLElement[],
+  animationClass: string,
+  staggerDelay: number = 200,
+  duration: number = 1000
+): Promise<void> => {
+  for (let i = 0; i < elements.length; i++) {
+    setTimeout(() => {
+      animateElement(elements[i], animationClass, duration);
+    }, i * staggerDelay);
+  }
+
+  // Return a promise that resolves when all animations are complete
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      resolve();
+    }, elements.length * staggerDelay + duration);
+  });
+};
+
+// Creates a more dramatic parallax effect based on mouse movement
+export const setupParallax = (
+  container: HTMLElement,
+  elements: HTMLElement[],
+  intensities: number[]
+): (() => void) => {
+  const handleMouseMove = (e: MouseEvent) => {
+    const { left, top, width, height } = container.getBoundingClientRect();
+    const mouseX = e.clientX - left;
+    const mouseY = e.clientY - top;
+
+    // Convert to values between -1 and 1
+    const normalizedX = (mouseX / width) * 2 - 1;
+    const normalizedY = (mouseY / height) * 2 - 1;
+
+    elements.forEach((element, index) => {
+      // Increased intensity for more dramatic effect
+      const intensity = intensities[index] || 1.5;
+      const moveX = normalizedX * intensity * 30; // Increased from 20 to 30
+      const moveY = normalizedY * intensity * 30; // Increased from 20 to 30
+
+      // Add slight rotation for more dynamic effect
+      const rotateZ = normalizedX * normalizedY * intensity * 3;
+
+      element.style.transform = `translate(${moveX}px, ${moveY}px) rotateZ(${rotateZ}deg)`;
+
+      // Add transition for smoother movement
+      element.style.transition = "transform 0.1s ease-out";
+    });
+  };
+
+  container.addEventListener("mousemove", handleMouseMove);
+
+  // Return cleanup function
+  return () => {
+    container.removeEventListener("mousemove", handleMouseMove);
+  };
+};
+
+// Creates a more dramatic floating animation effect
+export const applyFloatingAnimation = (
+  element: HTMLElement,
+  minOffset: number = -10,
+  maxOffset: number = 10,
+  duration: number = 3000
+): void => {
+  // Increase the min and max offsets for more dramatic effect
+  const enhancedMinOffset = minOffset * 2; // Double the negative offset
+  const enhancedMaxOffset = maxOffset * 2; // Double the positive offset
+
+  let start: number | null = null;
+  let previousTimestamp: number | null = null;
+
+  const animate = (timestamp: number) => {
+    if (!start) start = timestamp;
+    if (!previousTimestamp) previousTimestamp = timestamp;
+
+    const elapsed = timestamp - start;
+    const progress = elapsed / duration;
+
+    // Enhanced floating with both vertical and horizontal movement
+    const verticalOffset =
+      enhancedMinOffset +
+      ((Math.sin(progress * Math.PI * 2) + 1) / 2) *
+        (enhancedMaxOffset - enhancedMinOffset);
+    const horizontalOffset =
+      Math.cos(progress * Math.PI * 1.5) * (enhancedMaxOffset / 3);
+
+    // Add slight rotation for more organic movement
+    const rotation = Math.sin(progress * Math.PI) * 2;
+
+    element.style.transform = `translate(${horizontalOffset}px, ${verticalOffset}px) rotate(${rotation}deg)`;
+
+    if (progress < 1) {
+      requestAnimationFrame(animate);
+    } else {
+      // Reset and continue animation
+      start = null;
+      requestAnimationFrame(animate);
+    }
+  };
+
+  requestAnimationFrame(animate);
+};
+
+// New function: Create twinkling stars background
+export const createTwinklingStars = (
+  container: HTMLElement,
+  starCount: number = 50
+): void => {
+  // Clear any existing stars
+  const existingStars = container.querySelectorAll(".generated-star");
+  existingStars.forEach((star) => star.remove());
+
+  // Star types and animation durations
+  const types = ["star-tiny", "star-small", "star-medium", "star-large"];
+  const durations = ["4s", "6s", "8s", "7s", "5s", "9s"];
+
+  // Create stars
+  for (let i = 0; i < starCount; i++) {
+    const star = document.createElement("div");
+
+    // Random star properties
+    const typeIndex = Math.floor(Math.random() * types.length);
+    const durationIndex = Math.floor(Math.random() * durations.length);
+    const left = Math.random() * 100;
+    const top = Math.random() * 100;
+    const delay = Math.random() * 5;
+
+    // Set star styles
+    star.className = `generated-star star ${types[typeIndex]}`;
+    star.style.left = `${left}%`;
+    star.style.top = `${top}%`;
+    star.style.animationDuration = durations[durationIndex];
+    star.style.animationDelay = `${delay}s`;
+
+    // Append to container
+    container.appendChild(star);
+  }
+};
+
+// New function: Create comet effect
+export const createComet = (
+  container: HTMLElement,
+  interval: number = 8000
+): (() => void) => {
+  const createSingleComet = () => {
+    const comet = document.createElement("div");
+    comet.className = "comet";
+
+    // Random position and angle
+    const top = Math.random() * 70;
+    const angle = -45 + Math.random() * 20;
+
+    comet.style.top = `${top}%`;
+    comet.style.transform = `rotate(${angle}deg)`;
+
+    container.appendChild(comet);
+
+    // Remove comet after animation completes
+    setTimeout(() => {
+      comet.remove();
+    }, 15000);
+  };
+
+  // Create initial comet
+  createSingleComet();
+
+  // Create comets at intervals
+  const intervalId = setInterval(createSingleComet, interval);
+
+  // Return cleanup function
+  return () => {
+    clearInterval(intervalId);
+    const comets = container.querySelectorAll(".comet");
+    comets.forEach((comet) => comet.remove());
+  };
+};
+
+
+
+
+---------------------------------------
+File: app/styles/global.css
+---------------------------------------
+
+:root {
+  --transition-duration: 0.5s;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body {
+  height: 100%;
+  font-family: 'Roboto', sans-serif;
+}
+
+body {
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Montserrat', sans-serif;
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+.page-container {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  transition: background-color var(--transition-duration) ease;
+}
+
+.content {
+  flex: 1;
+  padding: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.animation-info {
+  margin-top: 2rem;
+  padding: 1.5rem;
+  border-radius: 8px;
+}
+
+.character-showcase {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 2rem;
+  margin: 3rem 0;
+}
+
+.character-card {
+  position: relative;
+  border-radius: 8px;
+  overflow: hidden;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.character-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+}
+
+/* Home page styles */
+.home-page {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: linear-gradient(135deg, #1a1a2e, #16213e, #0f3460);
+  color: white;
+  padding: 2rem;
+  opacity: 1;
+  transition: opacity 1s ease-in;
+}
+
+.home-page.loaded {
+  opacity: 1;
+}
+
+.home-content {
+  max-width: 1200px;
+  text-align: center;
+}
+
+.home-title {
+  font-size: 3.5rem;
+  margin-bottom: 1rem;
+  background: linear-gradient(90deg, #ff6b6b, #feca57, #48dbfb);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.home-description {
+  font-size: 1.2rem;
+  max-width: 800px;
+  margin: 0 auto 3rem;
+  opacity: 0.9;
+}
+
+.navigation-cards {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 2rem;
+}
+
+.nav-card {
+  width: 300px;
+  height: 200px;
+  border-radius: 12px;
+  overflow: hidden;
+  position: relative;
+  transition: transform 0.5s ease, box-shadow 0.5s ease;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+}
+
+.nav-card:hover {
+  transform: translateY(-10px);
+  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
+}
+
+.your-name-card {
+  background-color: #5c7aea;
+}
+
+.prince-achmed-card {
+  background-color: #b22b27;
+}
+
+.fantastic-planet-card {
+  background-color: #218c74;
+}
+
+.card-content {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  padding: 1.5rem;
+  background: rgba(0, 0, 0, 0.7);
+  color: white;
+}
+
+.card-content h2 {
+  font-size: 1.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.card-content p {
+  font-size: 0.9rem;
+  opacity: 0.8;
+}
+
+@media (max-width: 768px) {
+  .home-title {
+    font-size: 2.5rem;
+  }
+  
+  .navigation-cards {
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .nav-card {
+    width: 100%;
+    max-width: 300px;
+  }
+}
+
+.main-navigation {
+  padding: 1rem 2rem;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  transition: all var(--transition-duration) ease;
+}
+
+.nav-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.home-link {
+  font-size: 1.2rem;
+  font-weight: bold;
+  transition: transform 0.3s ease;
+}
+
+.home-link:hover {
+  transform: scale(1.05);
+}
+
+.nav-tabs {
+  display: flex;
+  gap: 1rem;
+}
+
+.nav-tab {
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+.nav-tab::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 0;
+  height: 2px;
+  transition: width 0.3s ease;
+}
+
+.nav-tab:hover::after {
+  width: 100%;
+}
+
+.active {
+  font-weight: bold;
+}
+
+.active::after {
+  width: 100%;
+}
+
+/* Tab-specific styles */
+.your-name-active::after {
+  background-color: #5c7aea;
+}
+
+.prince-achmed-active::after {
+  background-color: #b22b27;
+}
+
+.fantastic-planet-active::after {
+  background-color: #218c74;
+}
+
+@media (max-width: 768px) {
+  .nav-container {
+    flex-direction: column;
+    gap: 1rem;
+  }
+  
+  .nav-tabs {
+    width: 100%;
+    justify-content: space-between;
+  }
+  
+  .nav-tab {
+    padding: 0.5rem;
+    font-size: 0.9rem;
+  }
+}
+
+---------------------------------------
+File: app/styles/your-name.css
+---------------------------------------
+
+/* Your Name specific styles with enhanced animations */
+.your-name-page {
+  --primary-color: #5c7aea;
+  --secondary-color: #a6b1e1;
+  --text-color: #424874;
+  --bg-color: #f9f7f7;
+  --accent-color: #ff6b6b;
+  
+  background: linear-gradient(135deg, var(--bg-color), #e4ebf5);
+  color: var(--text-color);
+}
+
+.your-name-header {
+  text-align: center;
+  position: relative;
+  padding: 3rem 0;
+  overflow: hidden;
+}
+
+.your-name-title {
+  font-size: 4rem;
+  margin-bottom: 1rem;
+  background: linear-gradient(90deg, var(--primary-color), var(--accent-color));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  position: relative;
+  z-index: 1;
+  text-shadow: 0 3px 5px rgba(0, 0, 0, 0.1);
+  animation: titlePulse 5s ease-in-out infinite, gentleFloat 6s ease-in-out infinite;
+  transform-origin: center;
+}
+
+.your-name-subtitle {
+  font-size: 1.5rem;
+  opacity: 0.8;
+  margin-bottom: 2rem;
+  animation: gentleFloat 7s ease-in-out infinite 1s;
+}
+
+.your-name-background {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+  opacity: 0.2;
+}
+
+.your-name-navigation .main-navigation {
+  background-color: white;
+  box-shadow: 0 2px 20px rgba(92, 122, 234, 0.1);
+}
+
+/* Character showcase styles */
+.your-name-characters {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 2rem;
+  margin-top: 4rem;
+}
+
+.your-name-characters .character-card {
+  width: 280px;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(92, 122, 234, 0.1);
+  overflow: hidden;
+  transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275),
+              box-shadow 0.5s ease;
+  opacity: 0;
+  animation: fadeIn 0.8s ease forwards;
+}
+
+.your-name-characters .character-card:hover {
+  transform: translateY(-15px) scale(1.02);
+  box-shadow: 0 15px 40px rgba(92, 122, 234, 0.2);
+}
+
+.your-name-characters .character-image-container {
+  height: 320px;
+  overflow: hidden;
+  position: relative;
+}
+
+.your-name-characters .character-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* This is the key property - makes image cover the container */
+  object-position: center; /* Centers the image within the container */
+  transition: transform 0.5s ease; /* For smooth hover effect */
+}
+
+.your-name-characters .character-card:hover .character-image {
+  transform: scale(1.05);
+}
+
+.your-name-characters .character-info {
+  padding: 1.5rem;
+}
+
+.your-name-characters .character-name {
+  font-size: 1.5rem;
+  margin-bottom: 0.5rem;
+  color: var(--primary-color);
+}
+
+.your-name-characters .character-description {
+  font-size: 0.9rem;
+  opacity: 0.8;
+  line-height: 1.6;
+}
+
+/* Animation info styles */
+.your-name-info {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(92, 122, 234, 0.1);
+  padding: 2rem;
+  margin-top: 4rem;
+  opacity: 0;
+  animation: fadeIn 0.8s ease forwards;
+  animation-delay: 0.6s;
+}
+
+.your-name-info .animation-header {
+  margin-bottom: 2rem;
+  border-bottom: 2px solid var(--secondary-color);
+  padding-bottom: 1rem;
+}
+
+.your-name-info .animation-title {
+  font-size: 2rem;
+  color: var(--primary-color);
+  margin-bottom: 0.5rem;
+}
+
+.your-name-info .animation-meta {
+  display: flex;
+  gap: 1rem;
+  font-size: 0.9rem;
+  opacity: 0.7;
+}
+
+.your-name-info .animation-section {
+  margin-bottom: 1.5rem;
+}
+
+.your-name-info .animation-section h3 {
+  font-size: 1.2rem;
+  margin-bottom: 0.5rem;
+  color: var(--primary-color);
+}
+
+.your-name-info .animation-section p {
+  line-height: 1.7;
+  opacity: 0.9;
+}
+
+/* Added section title styles */
+.your-name-page .section-title {
+  font-size: 2rem;
+  margin-bottom: 1.5rem;
+  color: var(--primary-color);
+  text-align: center;
+  opacity: 0;
+  animation: fadeIn 0.8s ease forwards;
+  animation-delay: 0.3s;
+}
+
+.character-section {
+  margin: 4rem 0;
+}
+
+.cosmic-elements .star {
+  position: absolute;
+  width: 4px;
+  height: 4px;
+  background-color: var(--primary-color);
+  border-radius: 50%;
+  box-shadow: 0 0 10px 2px var(--primary-color);
+  animation: twinkle 4s ease-in-out infinite;
+}
+
+/* Animation Keyframes */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slideIn {
+  from { transform: translateX(-50px); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+}
+
+@keyframes floatUp {
+  0% { transform: translateY(0); }
+  50% { transform: translateY(-15px); }
+  100% { transform: translateY(0); }
+}
+
+/* New gentler float animation for title and subtitle */
+@keyframes gentleFloat {
+  0% { transform: translateY(0) translateX(0); }
+  25% { transform: translateY(-8px) translateX(4px); }
+  50% { transform: translateY(0) translateX(0); }
+  75% { transform: translateY(5px) translateX(-4px); }
+  100% { transform: translateY(0) translateX(0); }
+}
+
+@keyframes titlePulse {
+  0% { text-shadow: 0 3px 5px rgba(0, 0, 0, 0.1); }
+  50% { text-shadow: 0 3px 15px rgba(92, 122, 234, 0.5); }
+  100% { text-shadow: 0 3px 5px rgba(0, 0, 0, 0.1); }
+}
+
+@keyframes twinkle {
+  0% { opacity: 0.3; box-shadow: 0 0 3px 1px var(--primary-color); }
+  50% { opacity: 1; box-shadow: 0 0 10px 2px var(--primary-color); }
+  100% { opacity: 0.3; box-shadow: 0 0 3px 1px var(--primary-color); }
+}
+
+@keyframes gradientShift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+/* State Classes */
+.your-name-page .fade-in {
+  opacity: 0;
+  animation: fadeIn 0.8s ease forwards;
+}
+
+.floating-element {
+  animation: floatUp 4s ease-in-out infinite;
+}
+
+
+/* Improved cosmic background */
+.your-name-page {
+  position: relative;
+  overflow: hidden; /* Keep the stars contained */
+}
+
+/* Cosmic background with multiple layers */
+.cosmic-background {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+  pointer-events: none;
+}
+
+/* Enhanced star animations */
+.star {
+  position: absolute;
+  border-radius: 50%;
+  background-color: white;
+  animation: twinkle var(--twinkle-duration) ease-in-out infinite;
+  z-index: 0;
+}
+
+.star-tiny {
+  width: 2px;
+  height: 2px;
+  box-shadow: 0 0 4px 1px rgba(255, 255, 255, 0.8);
+}
+
+.star-small {
+  width: 3px;
+  height: 3px;
+  box-shadow: 0 0 6px 2px rgba(255, 255, 255, 0.8);
+}
+
+.star-medium {
+  width: 4px;
+  height: 4px;
+  box-shadow: 0 0 8px 2px rgba(51, 217, 178, 0.9);
+}
+
+.star-large {
+  width: 5px;
+  height: 5px;
+  box-shadow: 0 0 10px 3px rgba(92, 122, 234, 0.9);
+}
+
+.comet {
+  position: absolute;
+  width: 4px;
+  height: 4px;
+  background-color: white;
+  border-radius: 50%;
+  box-shadow: 0 0 20px 4px rgba(255, 255, 255, 0.8), 
+              0 0 40px 8px rgba(92, 122, 234, 0.4);
+  z-index: 2;
+  pointer-events: none;
+  opacity: 0;
+  animation: cometMove 8s linear forwards;
+}
+
+.comet::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 0;
+  width: 100px;
+  height: 2px;
+  background: linear-gradient(90deg, rgba(255, 255, 255, 0.8), transparent);
+  transform: translateY(-50%);
+}
+
+/* Enhanced twinkle animation */
+@keyframes twinkle {
+  0% { opacity: 0.1; transform: scale(0.8); }
+  50% { opacity: 1; transform: scale(1.2); }
+  100% { opacity: 0.1; transform: scale(0.8); }
+}
+
+/* Improved title pulse */
+@keyframes titlePulse {
+  0% { text-shadow: 0 0 5px rgba(92, 122, 234, 0.3); }
+  50% { text-shadow: 0 0 20px rgba(92, 122, 234, 0.8), 0 0 30px rgba(255, 107, 107, 0.6); }
+  100% { text-shadow: 0 0 5px rgba(92, 122, 234, 0.3); }
+}
+
+/* Comet animation */
+@keyframes cometMove {
+  0% { 
+    left: -5%;
+    top: 20%;
+    opacity: 0;
+    transform: rotate(-45deg);
+  }
+  5% {
+    opacity: 1;
+  }
+  90% {
+    opacity: 1;
+  }
+  100% { 
+    left: 110%;
+    top: 60%;
+    opacity: 0;
+    transform: rotate(-45deg);
+  }
+}
+
+.comet-1 {
+  animation-duration: 6s;
+  top: 15%;
+}
+
+.comet-2 {
+  animation-duration: 8s;
+  animation-delay: 3s;
+  top: 35%;
+}
+
+.comet-3 {
+  animation-duration: 7s;
+  animation-delay: 6s;
+  top: 25%;
+}
+
+/* Cosmic dust particles */
+.cosmic-dust {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  background-color: rgba(255, 255, 255, 0.5);
+  border-radius: 50%;
+  box-shadow: 0 0 2px 1px rgba(255, 255, 255, 0.3);
+  animation: dust 20s linear infinite;
+}
+
+@keyframes dust {
+  0% {
+    transform: translateY(0) rotate(0deg);
+    opacity: 0;
+  }
+  10% {
+    opacity: 0.8;
+  }
+  90% {
+    opacity: 0.8;
+  }
+  100% {
+    transform: translateY(-1000px) rotate(360deg);
+    opacity: 0;
+  }
+}
+
+/* Rainbow Fixed Comets */
+.fixed-comet {
+  position: fixed;
+  width: 6px;
+  height: 6px;
+  background-color: white;
+  border-radius: 50%;
+  box-shadow: 
+    0 0 20px 4px rgba(255, 255, 255, 0.9),
+    0 0 40px 8px rgba(92, 122, 234, 0.6);
+  z-index: 9999; /* Ensure it's on top of everything */
+  overflow: visible;
+  pointer-events: none;
+  animation-name: colorShift; /* Add this to existing animations */
+  animation-duration: 10s;
+  animation-iteration-count: infinite;
+  animation-timing-function: linear;
+}
+
+/* Rainbow color shift animation */
+@keyframes colorShift {
+  0% { 
+    background-color: #ff0000; /* Red */
+    box-shadow: 
+      0 0 20px 4px rgba(255, 0, 0, 0.9),
+      0 0 40px 8px rgba(255, 0, 0, 0.6);
+  }
+  16% { 
+    background-color: #ff9900; /* Orange */
+    box-shadow: 
+      0 0 20px 4px rgba(255, 153, 0, 0.9),
+      0 0 40px 8px rgba(255, 153, 0, 0.6);
+  }
+  33% { 
+    background-color: #ffff00; /* Yellow */
+    box-shadow: 
+      0 0 20px 4px rgba(255, 255, 0, 0.9),
+      0 0 40px 8px rgba(255, 255, 0, 0.6);
+  }
+  50% { 
+    background-color: #33cc33; /* Green */
+    box-shadow: 
+      0 0 20px 4px rgba(51, 204, 51, 0.9),
+      0 0 40px 8px rgba(51, 204, 51, 0.6);
+  }
+  66% { 
+    background-color: #3399ff; /* Blue */
+    box-shadow: 
+      0 0 20px 4px rgba(51, 153, 255, 0.9),
+      0 0 40px 8px rgba(51, 153, 255, 0.6);
+  }
+  83% { 
+    background-color: #9933ff; /* Purple */
+    box-shadow: 
+      0 0 20px 4px rgba(153, 51, 255, 0.9),
+      0 0 40px 8px rgba(153, 51, 255, 0.6);
+  }
+  100% { 
+    background-color: #ff0066; /* Pink (back to close to red) */
+    box-shadow: 
+      0 0 20px 4px rgba(255, 0, 102, 0.9),
+      0 0 40px 8px rgba(255, 0, 102, 0.6);
+  }
+}
+
+.fixed-comet::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  right: 0;
+  width: 150px;
+  height: 3px;
+  background: linear-gradient(to left, currentColor, transparent);
+  transform: translateY(-50%);
+  opacity: 0.9;
+}
+
+/* First fixed comet - moving from top-left to bottom-right */
+.fixed-comet-1 {
+  top: -50px;
+  left: -50px;
+  animation: fixedCometMove1 10s linear infinite, colorShift 5s linear infinite;
+}
+
+/* Second fixed comet - moving from right to left */
+.fixed-comet-2 {
+  top: 30%;
+  right: -50px;
+  animation: fixedCometMove2 15s linear infinite, colorShift 7s linear infinite;
+  animation-delay: 5s, 1s;
+}
+
+/* Third fixed comet - moving bottom to top */
+.fixed-comet-3 {
+  bottom: -50px;
+  left: 40%;
+  animation: fixedCometMove3 12s linear infinite, colorShift 6s linear infinite;
+  animation-delay: 8s, 2s;
+}
+
+@keyframes fixedCometMove1 {
+  0% {
+    top: -50px;
+    left: -50px;
+    opacity: 0;
+  }
+  10% {
+    opacity: 1;
+  }
+  90% {
+    opacity: 1;
+  }
+  100% {
+    top: 100vh;
+    left: 100vw;
+    opacity: 0;
+  }
+}
+
+@keyframes fixedCometMove2 {
+  0% {
+    right: -50px;
+    opacity: 0;
+    transform: rotate(180deg);
+  }
+  10% {
+    opacity: 1;
+  }
+  90% {
+    opacity: 1;
+  }
+  100% {
+    right: 110%;
+    opacity: 0;
+    transform: rotate(180deg);
+  }
+}
+
+@keyframes fixedCometMove3 {
+  0% {
+    bottom: -50px;
+    left: 40%;
+    opacity: 0;
+    transform: rotate(-45deg);
+  }
+  10% {
+    opacity: 1;
+  }
+  90% {
+    opacity: 1;
+  }
+  100% {
+    bottom: 120%;
+    left: 20%;
+    opacity: 0;
+    transform: rotate(-45deg);
+  }
+}
+
+
+
+---------------------------------------
+File: app/components/AnimationInfo.tsx
+---------------------------------------
+
+import React from "react";
+
+interface AnimationInfoProps {
+  title: string;
+  year: string;
+  director: string;
+  studio: string;
+  technique: string;
+  description: string;
+  webDesignInfluence: string;
+  className?: string;
+}
+
+export default function AnimationInfo({
+  title,
+  year,
+  director,
+  studio,
+  technique,
+  description,
+  webDesignInfluence,
+  className = "",
+}: AnimationInfoProps) {
+  return (
+    <div className={`animation-info ${className}`}>
+      <div className="animation-header">
+        <h2 className="animation-title">{title}</h2>
+        <div className="animation-meta">
+          <span>{year}</span>
+          <span>Director: {director}</span>
+          <span>Studio: {studio}</span>
+        </div>
+      </div>
+
+      <div className="animation-content">
+        <div className="animation-section">
+          <h3>Animation Technique</h3>
+          <p>{technique}</p>
+        </div>
+
+        <div className="animation-section">
+          <h3>About the Film</h3>
+          <p>{description}</p>
+        </div>
+
+        <div className="animation-section">
+          <h3>Web Design Influence</h3>
+          <p>{webDesignInfluence}</p>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+
+---------------------------------------
+File: app/components/CharacterShowcase.tsx
+---------------------------------------
+
+import React from "react";
+
+interface Character {
+  id: string;
+  name: string;
+  image: string;
+  description: string;
+}
+
+interface CharacterShowcaseProps {
+  characters: Character[];
+  animationStyle: string;
+  className?: string;
+}
+
+export default function CharacterShowcase({
+  characters,
+  animationStyle,
+  className = "",
+}: CharacterShowcaseProps) {
+  return (
+    <div
+      className={`character-showcase ${animationStyle}-characters ${className}`}
+    >
+      {characters.map((character) => (
+        <div key={character.id} className="character-card">
+          <div className="character-image-container">
+            <img
+              src={character.image}
+              alt={character.name}
+              className="character-image"
+            />
+          </div>
+          <div className="character-info">
+            <h3 className="character-name">{character.name}</h3>
+            <p className="character-description">{character.description}</p>
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+
+---------------------------------------
+File: app/components/Navigation.tsx
+---------------------------------------
+
+import { Link, useLocation } from "@remix-run/react";
+import { useEffect, useState } from "react";
+
+export default function Navigation() {
+  const location = useLocation();
+  const [activeTab, setActiveTab] = useState("");
+
+  useEffect(() => {
+    setActiveTab(location.pathname);
+  }, [location]);
+
+  return (
+    <nav className="main-navigation">
+      <div className="nav-container">
+        <Link to="/" className="home-link">
+          Animation Styles
+        </Link>
+
+        <div className="nav-tabs">
+          <Link
+            to="/your-name"
+            className={`nav-tab ${
+              activeTab === "/your-name" ? "active your-name-active" : ""
+            }`}
+          >
+            Your Name
+          </Link>
+
+          <Link
+            to="/prince-achmed"
+            className={`nav-tab ${
+              activeTab === "/prince-achmed"
+                ? "active prince-achmed-active"
+                : ""
+            }`}
+          >
+            Prince Achmed
+          </Link>
+
+          <Link
+            to="/fantastic-planet"
+            className={`nav-tab ${
+              activeTab === "/fantastic-planet"
+                ? "active fantastic-planet-active"
+                : ""
+            }`}
+          >
+            Fantastic Planet
+          </Link>
+        </div>
+      </div>
+    </nav>
+  );
+}
+
+
+---------------------------------------
+File: app/components/film-specific/SimpleComets.tsx
+---------------------------------------
+
+import React from "react";
+
+export function SimpleComets() {
+  return (
+    <>
+      <div className="fixed-comet fixed-comet-1"></div>
+      <div className="fixed-comet fixed-comet-2"></div>
+      <div className="fixed-comet fixed-comet-3"></div>
+    </>
+  );
+}
+
+
+---------------------------------------
+File: app/components/film-specific/YourNameElements.tsx
+---------------------------------------
+
+import React, { useEffect, useRef } from "react";
+import { applyFloatingAnimation, setupParallax } from "~/utils/animations";
+
+// Component specifically for comets
+export function Comets() {
+  // Create a reference to handle animation intervals
+  const intervalsRef = useRef<number[]>([]);
+
+  useEffect(() => {
+    // Function to create a comet element
+    const createComet = () => {
+      // Create comet container if it doesn't exist
+      let cometContainer = document.querySelector(".comet-container");
+      if (!cometContainer) {
+        cometContainer = document.createElement("div");
+        cometContainer.className = "comet-container";
+        cometContainer.style.position = "absolute";
+        cometContainer.style.top = "0";
+        cometContainer.style.left = "0";
+        cometContainer.style.width = "100%";
+        cometContainer.style.height = "100%";
+        cometContainer.style.overflow = "hidden";
+        cometContainer.style.pointerEvents = "none";
+        cometContainer.style.zIndex = "10";
+        document.querySelector(".your-name-page")?.appendChild(cometContainer);
+      }
+
+      // Create comet element
+      const comet = document.createElement("div");
+      const randomClass = Math.floor(Math.random() * 3) + 1;
+      comet.className = `comet comet-${randomClass}`;
+
+      // Add to DOM
+      cometContainer?.appendChild(comet);
+
+      // Remove after animation completes
+      setTimeout(() => {
+        comet.remove();
+      }, 10000);
+    };
+
+    // Create initial comet
+    createComet();
+
+    // Set intervals for creating comets at different times
+    intervalsRef.current.push(window.setInterval(createComet, 8000));
+    intervalsRef.current.push(window.setInterval(createComet, 15000));
+
+    // Cleanup intervals on unmount
+    return () => {
+      intervalsRef.current.forEach((interval) => clearInterval(interval));
+    };
+  }, []);
+
+  return null; // This component doesn't render anything directly
+}
+
+// Helper function to generate random stars
+const generateStars = (count: number) => {
+  const stars = [];
+  const types = ["star-tiny", "star-small", "star-medium", "star-large"];
+  const durations = ["4s", "6s", "8s", "7s", "5s", "9s"];
+
+  for (let i = 0; i < count; i++) {
+    // Get random values
+    const typeIndex = Math.floor(Math.random() * types.length);
+    const durationIndex = Math.floor(Math.random() * durations.length);
+    const left = Math.random() * 100;
+    const top = Math.random() * 100;
+    const delay = Math.random() * 5;
+
+    stars.push({
+      id: `star-${i}`,
+      type: types[typeIndex],
+      style: {
+        left: `${left}%`,
+        top: `${top}%`,
+        animationDuration: durations[durationIndex],
+        animationDelay: `${delay}s`,
+        "--twinkle-duration": durations[durationIndex],
+      },
+    });
+  }
+
+  return stars;
+};
+
+// Helper function to generate cosmic dust particles
+const generateCosmicDust = (count: number) => {
+  const dust = [];
+
+  for (let i = 0; i < count; i++) {
+    const left = Math.random() * 100;
+    const delay = Math.random() * 10;
+    const duration = 15 + Math.random() * 20;
+
+    dust.push({
+      id: `dust-${i}`,
+      style: {
+        left: `${left}%`,
+        bottom: "-5px",
+        animationDuration: `${duration}s`,
+        animationDelay: `${delay}s`,
+      },
+    });
+  }
+
+  return dust;
+};
+
+export function YourNameBackground() {
+  // Generate 100 stars of various sizes
+  const stars = generateStars(100);
+  // Generate 30 cosmic dust particles
+  const cosmicDust = generateCosmicDust(30);
+
+  return (
+    <div className="cosmic-background">
+      {/* Render stars */}
+      {stars.map((star) => (
+        <div
+          key={star.id}
+          className={`star ${star.type}`}
+          style={star.style as React.CSSProperties}
+        />
+      ))}
+
+      {/* Render cosmic dust */}
+      {cosmicDust.map((dust) => (
+        <div
+          key={dust.id}
+          className="cosmic-dust"
+          style={dust.style as React.CSSProperties}
+        />
+      ))}
+
+      {/* Static comets with different delays */}
+      <div className="comet comet-1"></div>
+      <div className="comet comet-2"></div>
+      <div className="comet comet-3"></div>
+
+      {/* SVG wave background */}
+      <svg
+        className="your-name-background"
+        viewBox="0 0 1440 400"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          d="M0,192L48,197.3C96,203,192,213,288,229.3C384,245,480,267,576,250.7C672,235,768,181,864,181.3C960,181,1056,235,1152,234.7C1248,235,1344,181,1392,154.7L1440,128L1440,0L1392,0C1344,0,1248,0,1152,0C1056,0,960,0,864,0C768,0,672,0,576,0C480,0,384,0,288,0C192,0,96,0,48,0L0,0Z"
+          fill="#5c7aea"
+          fillOpacity="0.3"
+        />
+        <path
+          d="M0,192L48,197.3C96,203,192,213,288,229.3C384,245,480,267,576,250.7C672,235,768,181,864,181.3C960,181,1056,235,1152,234.7C1248,235,1344,181,1392,154.7L1440,128L1440,0L1392,0C1344,0,1248,0,1152,0C1056,0,960,0,864,0C768,0,672,0,576,0C480,0,384,0,288,0C192,0,96,0,48,0L0,0Z"
+          fill="#ff6b6b"
+          fillOpacity="0.2"
+          transform="translate(0, 100)"
+        />
+      </svg>
+    </div>
+  );
+}
+
+export function YourNameTitle({ title }: { title: string }) {
+  const titleRef = useRef<HTMLHeadingElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (containerRef.current) {
+      const parallaxElements = Array.from(
+        containerRef.current.querySelectorAll(".parallax-element")
+      ) as HTMLElement[];
+
+      // More intense parallax effect with higher intensities
+      const intensities = [1.2, 0.8, 1.5];
+
+      const cleanup = setupParallax(
+        containerRef.current,
+        parallaxElements,
+        intensities
+      );
+
+      return cleanup;
+    }
+  }, []);
+
+  return (
+    <div className="your-name-header" ref={containerRef}>
+      <h1 className="your-name-title">{title}</h1>
+      <p className="your-name-subtitle parallax-element">
+        A modern Japanese animation masterpiece
+      </p>
+      <div className="cosmic-elements">
+        <div
+          className="star star-large parallax-element"
+          style={{ top: "20%", left: "10%" }}
+        ></div>
+        <div
+          className="star star-medium parallax-element"
+          style={{ top: "50%", left: "80%" }}
+        ></div>
+        <div
+          className="star star-large parallax-element"
+          style={{ top: "70%", left: "30%" }}
+        ></div>
+        <div
+          className="star star-medium parallax-element"
+          style={{ top: "30%", left: "70%" }}
+        ></div>
+        <div
+          className="star star-large parallax-element"
+          style={{ top: "80%", left: "60%" }}
+        ></div>
+      </div>
+    </div>
+  );
+}
+
+export function YourNameCharacters() {
+  // This would typically come from an API or data file
+  const characters = [
+    {
+      id: "taki",
+      name: "Taki Tachibana",
+      image: "/images/taki.jpg",
+      description:
+        "A high school boy from Tokyo who mysteriously begins to switch bodies with Mitsuha.",
+    },
+    {
+      id: "mitsuha",
+      name: "Mitsuha Miyamizu",
+      image: "/images/mitsuha.jpg",
+      description:
+        "A high school girl from a rural town who dreams of living in Tokyo. She begins switching bodies with Taki.",
+    },
+    {
+      id: "tessie",
+      name: "Katsuhiko Teshigawara",
+      image: "/images/tessie.jpg",
+      description:
+        "Mitsuha's friend who helps her with her plan to save the town from the approaching comet.",
+    },
+  ];
+
+  return (
+    <div className="your-name-characters">
+      {characters.map((character, index) => (
+        <div
+          key={character.id}
+          className="character-card"
+          style={{ animationDelay: `${0.2 * index}s` }}
+        >
+          <div className="character-image-container">
+            <img
+              src={character.image}
+              alt={character.name}
+              className="character-image"
+            />
+          </div>
+          <div className="character-info">
+            <h3 className="character-name">{character.name}</h3>
+            <p className="character-description">{character.description}</p>
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+
+---------------------------------------
+File: app/routes/_index.tsx
+---------------------------------------
+
+import type { MetaFunction } from "@remix-run/node";
+import { Link } from "@remix-run/react";
+import { useEffect, useState } from "react";
+
+export const meta: MetaFunction = () => {
+  return [
+    { title: "Animation Styles Showcase" },
+    {
+      name: "description",
+      content: "Explore the visual language of three iconic animated films",
+    },
+  ];
+};
+
+export default function Index() {
+  const [loaded, setLoaded] = useState(false);
+
+  useEffect(() => {
+    setLoaded(true);
+  }, []);
+
+  return (
+    <div className={`home-page ${loaded ? "loaded" : ""}`}>
+      <div className="home-content">
+        <h1 className="home-title">Animation Styles Showcase</h1>
+        <p className="home-description">
+          Explore three unique animation styles through interactive web
+          experiences inspired by iconic animated films.
+        </p>
+
+        <div className="navigation-cards">
+          <Link to="/your-name" className="nav-card your-name-card">
+            <div className="card-content">
+              <h2>Your Name</h2>
+              <p>Modern Japanese Animation</p>
+            </div>
+          </Link>
+
+          <Link to="/prince-achmed" className="nav-card prince-achmed-card">
+            <div className="card-content">
+              <h2>The Adventures of Prince Achmed</h2>
+              <p>Silhouette Animation</p>
+            </div>
+          </Link>
+
+          <Link
+            to="/fantastic-planet"
+            className="nav-card fantastic-planet-card"
+          >
+            <div className="card-content">
+              <h2>Fantastic Planet</h2>
+              <p>Surrealist Animation</p>
+            </div>
+          </Link>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+
+---------------------------------------
+File: app/routes/your-name.tsx
+---------------------------------------
+
+import type { LinksFunction, MetaFunction } from "@remix-run/node";
+import { useEffect, useState } from "react";
+import Navigation from "~/components/Navigation";
+import AnimationInfo from "~/components/AnimationInfo";
+import {
+  YourNameTitle,
+  YourNameCharacters,
+  YourNameBackground,
+} from "~/components/film-specific/YourNameElements";
+import { SimpleComets } from "~/components/film-specific/SimpleComets";
+
+import yourNameStylesUrl from "~/styles/your-name.css";
+
+export const links: LinksFunction = () => {
+  return [{ rel: "stylesheet", href: yourNameStylesUrl }];
+};
+
+export const meta: MetaFunction = () => {
+  return [
+    { title: "Your Name - Animation Styles Showcase" },
+    {
+      name: "description",
+      content: "Explore the visual language of 'Your Name' by Makoto Shinkai",
+    },
+  ];
+};
+
+export default function YourNamePage() {
+  const [isLoaded, setIsLoaded] = useState(false);
+
+  useEffect(() => {
+    // Set loaded state after a small delay to ensure animations trigger properly
+    const timer = setTimeout(() => {
+      setIsLoaded(true);
+      console.log("Page loaded state set to true");
+    }, 100);
+
+    // Scroll to top when component mounts
+    window.scrollTo(0, 0);
+
+    return () => clearTimeout(timer);
+  }, []);
+
+  return (
+    <div
+      className={`page-container your-name-page ${isLoaded ? "loaded" : ""}`}
+    >
+      {/* Add the cosmic background to the entire page */}
+      <YourNameBackground />
+
+      {/* Add simple fixed comets that will definitely show */}
+      <SimpleComets />
+
+      <div className="your-name-navigation">
+        <Navigation />
+      </div>
+
+      <div className="content">
+        <YourNameTitle title="Your Name" />
+
+        <div className="your-name-content fade-in">
+          <div className="character-section">
+            <h2 className="section-title">Characters</h2>
+            <YourNameCharacters />
+          </div>
+
+          <AnimationInfo
+            className="your-name-info"
+            title="Your Name (Kimi no Na wa)"
+            year="2016"
+            director="Makoto Shinkai"
+            studio="CoMix Wave Films"
+            technique="Modern digital anime with carefully integrated 2D and 3D elements, featuring breathtaking landscapes, detailed lighting effects, and meticulous attention to everyday details."
+            description="Your Name is a critically acclaimed Japanese animated romantic fantasy film. It tells the story of a high school boy in Tokyo and a high school girl in rural Japan who suddenly begin to swap bodies. The film explores themes of connection, time, fate, and disaster through the lens of this supernatural phenomenon, with stunning visuals that blend photorealistic backgrounds with anime character designs."
+            webDesignInfluence="This web page draws inspiration from the film's vibrant color palette, cosmic motifs, and blend of urban and natural elements. The design incorporates smooth transitions and parallax effects to mirror the film's themes of connection across space and time. Character showcases feature floating animations and gradients reminiscent of the film's magical comet imagery."
+          />
+        </div>
+      </div>
+    </div>
+  );
+}
