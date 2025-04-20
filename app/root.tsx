@@ -8,7 +8,7 @@ import {
 } from "@remix-run/react";
 import type { LinksFunction } from "@remix-run/node";
 
-import globalStylesUrl from "~/styles/global.css";
+import globalStylesUrl from "~/styles/global.css?url";
 
 export const links: LinksFunction = () => {
   return [

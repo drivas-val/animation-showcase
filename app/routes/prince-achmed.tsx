@@ -9,7 +9,7 @@ import {
   PuppetTheater,
 } from "~/components/film-specific/PrinceAchmedElements";
 
-import princeAchmedStylesUrl from "~/styles/prince-achmed.css";
+import princeAchmedStylesUrl from "~/styles/prince-achmed.css?url";
 
 export const links: LinksFunction = () => {
   return [{ rel: "stylesheet", href: princeAchmedStylesUrl }];

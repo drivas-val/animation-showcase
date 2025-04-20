@@ -10,7 +10,7 @@ import {
 import { SimpleComets } from "~/components/film-specific/SimpleComets";
 
 
-import yourNameStylesUrl from "~/styles/your-name.css";
+import yourNameStylesUrl from "~/styles/your-name.css?url";
 
 export const links: LinksFunction = () => {
   return [{ rel: "stylesheet", href: yourNameStylesUrl }];

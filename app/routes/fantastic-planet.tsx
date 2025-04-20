@@ -10,7 +10,7 @@ import {
   SurrealElements,
 } from "~/components/film-specific/FantasticPlanetElements";
 
-import fantasticPlanetStylesUrl from "~/styles/fantastic-planet.css";
+import fantasticPlanetStylesUrl from "~/styles/fantastic-planet.css?url";
 
 export const links: LinksFunction = () => {
   return [{ rel: "stylesheet", href: fantasticPlanetStylesUrl }];
