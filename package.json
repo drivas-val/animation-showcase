@@ -4,14 +4,14 @@
   "sideEffects": false,
   "type": "module",
   "scripts": {
-    "build": "remix vite:build",
+    "build": "remix build",
     "dev": "remix vite:dev",
     "lint": "eslint --ignore-path .gitignore --cache --cache-location ./node_modules/.cache/eslint .",
     "start": "remix-serve ./build/server/index.js",
-    "typecheck": "tsc",
-    "build:netlify": "npm run build && cp index.html build/client/"
+    "typecheck": "tsc"
   },
   "dependencies": {
+    "@remix-run/netlify": "^1.19.3",
     "@remix-run/node": "^2.16.5",
     "@remix-run/react": "^2.16.5",
     "@remix-run/serve": "^2.16.5",
