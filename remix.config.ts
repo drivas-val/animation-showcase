@@ -1,6 +1,5 @@
 export default {
   serverBuildTarget: "netlify",
-  server: "./server.js",
   serverBuildPath: "build/server/index.js",
   future: {
     v3_fetcherPersist: true,
